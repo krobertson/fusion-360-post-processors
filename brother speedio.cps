@@ -602,9 +602,9 @@ var smoothingSettings = {
   semi                  : 3, // semi-roughing level for smoothing in automatic mode
   semifinishing         : 4, // semi-finishing level for smoothing in automatic mode
   finishing             : 5, // finishing level for smoothing in automatic mode
-  thresholdRoughing     : toPreciseUnit(0.5, MM), // operations with stock/tolerance above that threshold will use roughing level in automatic mode
-  thresholdFinishing    : toPreciseUnit(0.05, MM), // operations with stock/tolerance below that threshold will use finishing level in automatic mode
-  thresholdSemiFinishing: toPreciseUnit(0.1, MM), // operations with stock/tolerance above finishing and below threshold roughing that threshold will use semi finishing level in automatic mode
+  thresholdRoughing     : toPreciseUnit(0.005, IN), // operations with stock/tolerance above that threshold will use roughing level in automatic mode
+  thresholdFinishing    : toPreciseUnit(0.0005, IN), // operations with stock/tolerance below that threshold will use finishing level in automatic mode
+  thresholdSemiFinishing: toPreciseUnit(0.002, IN), // operations with stock/tolerance above finishing and below threshold roughing that threshold will use semi finishing level in automatic mode
 
   differenceCriteria: "level", // options: "level", "tolerance", "both". Specifies criteria when output smoothing codes
   autoLevelCriteria : "stock", // use "stock" or "tolerance" to determine levels in automatic mode
