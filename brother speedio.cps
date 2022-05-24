@@ -3015,6 +3015,8 @@ var mapCommand = {
 function onCommand(command) {
   switch (command) {
   case COMMAND_STOP:
+    writeRetract(Z);
+    writeRetract(X, Y);
     writeBlock(mFormat.format(0));
     forceSpindleSpeed = true;
     forceCoolant = true;
