@@ -217,6 +217,17 @@ properties = {
     ],
     value: "-1"
   },
+  smoothingCriteria: {
+    title      : "M298 Smoothing Criteria",
+    description: "Select whether Stock to Leave or Tolerance is used for determining the automatic smoothing mode. Only used when High accurracy mode is set to M298 and level is set to Automatic.",
+    group      : "preferences",
+    type       : "enum",
+    values     : [
+      {title:"Stock to Leave", id:"stock"},
+      {title:"Tolerance", id:"tolerance"},
+    ],
+    value: "stock"
+  },
   useInverseTime: {
     title      : "Use inverse time feedrates",
     description: "'Yes' enables inverse time feedrates, 'No' outputs DPM feedrates.",
@@ -630,7 +641,11 @@ function initializeSmoothing() {
     smoothingSettings.finishing = 2;
     smoothing.level = (smoothing.level >= 0 && smoothing.level <= 5) ? [0, 5, 3, 4, 1, 2][smoothing.level] : smoothing.level;
     break;
+  case "M298":
+    smoothingSettings.autoLevelCriteria = getProperty("smoothingCriteria");
+    break;
   }
+
   // automatically determine smoothing level
   if (smoothing.level == 9999) {
     if (smoothingSettings.autoLevelCriteria == "stock") { // determine auto smoothing level based on stockToLeave
