@@ -650,16 +650,12 @@ function initializeSmoothing() {
   if (smoothing.level == 9999) {
     if (smoothingSettings.autoLevelCriteria == "stock") { // determine auto smoothing level based on stockToLeave
       var stockToLeave = xyzFormat.getResultingValue(getParameter("operation:stockToLeave", 0));
-      var verticalStockToLeave = xyzFormat.getResultingValue(getParameter("operation:verticalStockToLeave", 0));
-      if (((stockToLeave >= smoothingSettings.thresholdRoughing) && (verticalStockToLeave >= smoothingSettings.thresholdRoughing)) ||
-          getParameter("operation:strategy", "") == "face") {
+      if ((stockToLeave >= smoothingSettings.thresholdRoughing) || getParameter("operation:strategy", "") == "face") {
         smoothing.level = smoothingSettings.roughing; // set roughing level
       } else {
-        if (((stockToLeave >= smoothingSettings.thresholdSemiFinishing) && (stockToLeave < smoothingSettings.thresholdRoughing)) &&
-          ((verticalStockToLeave >= smoothingSettings.thresholdSemiFinishing) && (verticalStockToLeave  < smoothingSettings.thresholdRoughing))) {
+        if ((stockToLeave >= smoothingSettings.thresholdSemiFinishing) && (stockToLeave < smoothingSettings.thresholdRoughing)) {
           smoothing.level = smoothingSettings.semi; // set semi level
-        } else if (((stockToLeave >= smoothingSettings.thresholdFinishing) && (stockToLeave < smoothingSettings.thresholdSemiFinishing)) &&
-          ((verticalStockToLeave >= smoothingSettings.thresholdFinishing) && (verticalStockToLeave  < smoothingSettings.thresholdSemiFinishing))) {
+        } else if ((stockToLeave >= smoothingSettings.thresholdFinishing) && (stockToLeave < smoothingSettings.thresholdSemiFinishing)) {
           smoothing.level = smoothingSettings.semifinishing; // set semi-finishing level
         } else {
           smoothing.level = smoothingSettings.finishing; // set finishing level
