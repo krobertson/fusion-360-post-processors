@@ -218,8 +218,8 @@ properties = {
     value: "-1"
   },
   smoothingCriteria: {
-    title      : "M298 Smoothing Criteria",
-    description: "Select whether Stock to Leave or Tolerance is used for determining the automatic smoothing mode. Only used when High accurracy mode is set to M298 and level is set to Automatic.",
+    title      : "Smoothing Criteria",
+    description: "Select whether Stock to Leave or Tolerance is used for determining the automatic smoothing mode. Only used when High accuracy level is set to Automatic.",
     group      : "preferences",
     type       : "enum",
     values     : [
@@ -630,6 +630,7 @@ function initializeSmoothing() {
   smoothing.level = parseInt(getProperty("useSmoothing"), 10);
   smoothing.level = isNaN(smoothing.level) ? -1 : smoothing.level;
   smoothing.tolerance = Math.max(getParameter("operation:tolerance", smoothingSettings.thresholdFinishing), 0);
+  smoothingSettings.autoLevelCriteria = getProperty("smoothingCriteria");
 
   // setup for proper smoothing mode
   switch (getProperty("smoothingMode")) {
@@ -640,9 +641,6 @@ function initializeSmoothing() {
     smoothingSettings.semifinishing = 1;
     smoothingSettings.finishing = 2;
     smoothing.level = (smoothing.level >= 0 && smoothing.level <= 5) ? [0, 5, 3, 4, 1, 2][smoothing.level] : smoothing.level;
-    break;
-  case "M298":
-    smoothingSettings.autoLevelCriteria = getProperty("smoothingCriteria");
     break;
   }
 
