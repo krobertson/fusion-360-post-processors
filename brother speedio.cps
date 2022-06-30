@@ -341,8 +341,6 @@ var forceMultiAxisIndexing = false; // force multi-axis indexing for 3D programs
 var cancelTiltFirst = true; // cancel G68.2 with G69 prior to G54-G59 WCS block
 var useABCPrepositioning = false; // position ABC axes prior to G68.2 block
 
-var WARNING_WORK_OFFSET = 0;
-
 var allowIndexingWCSProbing = false; // specifies that probe WCS with tool orientation is supported
 var probeVariables = {
   outputRotationCodes: false, // defines if it is required to output rotation codes
@@ -1041,14 +1039,6 @@ function printProbeResults() {
   return ((currentSection.getParameter("printResults", 0) == 1) && (getProperty("probingType") == "Renishaw"));
 }
 
-var probeOutputWorkOffset = 1;
-
-function onParameter(name, value) {
-  if (name == "probe-output-work-offset") {
-    probeOutputWorkOffset = (value > 0) ? value : 1;
-  }
-}
-
 function onSection() {
   var forceToolAndRetract = optionalSection && !currentSection.isOptional();
   optionalSection = currentSection.isOptional();
@@ -1396,6 +1386,7 @@ function setProbeAngleMethod() {
 /** Output rotation offset based on angular probing cycle. */
 function setProbeAngle() {
   if (probeVariables.outputRotationCodes) {
+    var probeOutputWorkOffset = currentSection.probeWorkOffset;
     validate(probeOutputWorkOffset <= 6, "Angular Probing only supports work offsets 1-6.");
     if (probeVariables.probeAngleMethod == "G68" && (Vector.diff(currentSection.getGlobalInitialToolAxis(), new Vector(0, 0, 1)).length > 1e-4)) {
       error(localize("You cannot use multi axis toolpaths while G68 Rotation is in effect."));
@@ -1683,6 +1674,10 @@ function onCyclePoint(x, y, z) {
       );
       break;
     case "reaming":
+      if (feedFormat.getResultingValue(cycle.feedrate) != feedFormat.getResultingValue(cycle.retractFeedrate)) {
+        expandCyclePoint(x, y, z);
+        break;
+      }
       if (P > 0) {
         writeBlock(
           gRetractModal.format(98), gCycleModal.format(89),
@@ -1718,6 +1713,10 @@ function onCyclePoint(x, y, z) {
       );
       break;
     case "boring":
+      if (feedFormat.getResultingValue(cycle.feedrate) != feedFormat.getResultingValue(cycle.retractFeedrate)) {
+        expandCyclePoint(x, y, z);
+        break;
+      }
       if (P > 0) {
         writeBlock(
           gRetractModal.format(98), gCycleModal.format(89),
@@ -2250,6 +2249,7 @@ function onCyclePoint(x, y, z) {
 
 function getProbingArguments(cycle, updateWCS) {
   var outputWCSCode = updateWCS && currentSection.strategy == "probe";
+  var probeOutputWorkOffset = currentSection.probeWorkOffset;
   if (outputWCSCode) {
     validate(probeOutputWorkOffset <= 99, "Work offset is out of range.");
     var nextWorkOffset = hasNextSection() ? getNextSection().workOffset == 0 ? 1 : getNextSection().workOffset : -1;
