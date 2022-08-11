@@ -11,3 +11,5 @@ The `brother speedio.cps` is the stock Brother Speedio post processor with some 
 * Updated stop operations to retract to the home location
 * Added NC property to easily control the smoothing criteria between stock to leave or tolerances
 * Updated some of the base thresholds for finishing vs roughing
+* Fixed probing in Z with the Blum probe
+* Added support for tool break detection through tool library setting
