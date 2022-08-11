@@ -3048,6 +3048,11 @@ function onCommand(command) {
   case COMMAND_STOP_CHIP_TRANSPORT:
     return;
   case COMMAND_BREAK_CONTROL:
+    writeln("");
+    writeComment("Performing tool break detection");
+    setCoolant(COOLANT_OFF);
+    onCommand(COMMAND_STOP_SPINDLE);
+    writeBlock(mFormat.format(98), "P5000");
     return;
   case COMMAND_TOOL_MEASURE:
     return;
@@ -3074,7 +3079,9 @@ function onSectionEnd() {
 
   if (((getCurrentSectionId() + 1) >= getNumberOfSections()) ||
       (tool.number != getNextSection().getTool().number)) {
-    onCommand(COMMAND_BREAK_CONTROL);
+    // should we check for tool breakage
+    if (tool.breakControl)
+      onCommand(COMMAND_BREAK_CONTROL);
   }
 
   // the code below gets the machine angles from previous operation.  closestABC must also be set to true
