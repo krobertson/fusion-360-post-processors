@@ -15,7 +15,7 @@ vendor = "Brother";
 vendorUrl = "http://www.brother.com";
 legal = "Copyright (C) 2012-2022 by Autodesk, Inc.";
 certificationLevel = 2;
-minimumRevision = 45702;
+minimumRevision = 45821;
 
 longDescription = "Generic milling post for Brother Speedio S300X1, S500X1 and S700X1 machines.";
 
@@ -3088,11 +3088,6 @@ function onSectionEnd() {
       onCommand(COMMAND_BREAK_CONTROL);
   }
 
-  // the code below gets the machine angles from previous operation.  closestABC must also be set to true
-  if (currentSection.isMultiAxis() && currentSection.isOptimizedForMachine()) {
-    currentMachineABC = currentSection.getFinalToolAxisABC();
-  }
-
   if (tool.type != TOOL_PROBE && getProperty("washdownCoolant") == "operationEnd") {
     writeBlock(mFormat.format(washdownCoolant.on));
     writeBlock(mFormat.format(washdownCoolant.off));
@@ -3257,7 +3252,7 @@ function inspectionWriteCADTransform() {
 }
 
 function inspectionWriteWorkplaneTransform() {
-  var orientation = (machineConfiguration.isMultiAxisConfiguration() && currentMachineABC != undefined) ? machineConfiguration.getOrientation(currentMachineABC) : currentSection.workPlane;
+  var orientation = machineConfiguration.isMultiAxisConfiguration() ? machineConfiguration.getOrientation(getCurrentDirection()) : currentSection.workPlane;
   var abc = orientation.getEuler2(EULER_XYZ_S);
   writeln("DPRNT[G330" +
     "*N" + getPointNumber() +
