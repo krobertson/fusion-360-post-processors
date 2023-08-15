@@ -23,7 +23,7 @@ extension = "NC";
 programNameIsInteger = false;
 setCodePage("ascii");
 
-capabilities = CAPABILITY_MILLING;
+capabilities = CAPABILITY_MILLING | CAPABILITY_MACHINE_SIMULATION;
 tolerance = spatial(0.002, MM);
 
 minimumChordLength = spatial(0.25, MM);
@@ -422,20 +422,20 @@ function onOpen() {
   }
   gRotationModal.format(69); // Default to G69 Rotation Off
 
-  if (getProperty("useTrunnion")) {
-    var aAxis = createAxis({coordinate:0, table:true, axis:[1, 0, 0], range:[-30, 120], preference:1});
-    var cAxis = createAxis({coordinate:2, table:true, axis:[0, 0, 1], cyclic:true});
-    machineConfiguration = new MachineConfiguration(aAxis, cAxis);
+  // if (getProperty("useTrunnion")) {
+  //   var aAxis = createAxis({coordinate:0, table:true, axis:[1, 0, 0], range:[-30, 120], preference:1});
+  //   var cAxis = createAxis({coordinate:2, table:true, axis:[0, 0, 1], cyclic:true});
+  //   machineConfiguration = new MachineConfiguration(aAxis, cAxis);
 
-    setMachineConfiguration(machineConfiguration);
-    optimizeMachineAngles2(1); // TCP mode disabled
-  } else if (getProperty("hasAAxis")) { // note: setup your machine here
-    var aAxis = createAxis({coordinate:0, table:true, axis:[1, 0, 0], range:[-360, 360], preference:1});
-    machineConfiguration = new MachineConfiguration(aAxis);
+  //   setMachineConfiguration(machineConfiguration);
+  //   optimizeMachineAngles2(1); // TCP mode disabled
+  // } else if (getProperty("hasAAxis")) { // note: setup your machine here
+  //   var aAxis = createAxis({coordinate:0, table:true, axis:[1, 0, 0], range:[-360, 360], preference:1});
+  //   machineConfiguration = new MachineConfiguration(aAxis);
 
-    setMachineConfiguration(machineConfiguration);
-    optimizeMachineAngles2(1); // TCP mode disabled
-  }
+  //   setMachineConfiguration(machineConfiguration);
+  //   optimizeMachineAngles2(1); // TCP mode disabled
+  // }
 
   if (!machineConfiguration.isMachineCoordinate(0)) {
     aOutput.disable();
@@ -1000,7 +1000,7 @@ function getWorkPlaneMachineABC(workPlane, _setWorkPlane, rotate) {
 }
 
 function printProbeResults() {
-  return ((currentSection.getParameter("printResults", 0) == 1) && (getProperty("probingType") == "Renishaw"));
+  return (currentSection.getParameter("printResults", 0) == 1);
 }
 
 function onSection() {
@@ -1458,6 +1458,7 @@ function onCyclePoint(x, y, z) {
     var threadPitch = tool.threadPitch;
     var threadsPerInch = 1.0 / threadPitch;
 
+    writeln(formatComment(cycleType));
     switch (cycleType) {
     case "drilling":
       writeBlock(
@@ -1721,6 +1722,7 @@ function onCyclePoint(x, y, z) {
           "Z" + xyzFormat.format(-cycle.depth),
           "Q" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
+          conditional(x != 0, "I" + xyzFormat.format(x)),
           getProbingArguments(cycle, true)
         );
       }
@@ -1744,6 +1746,7 @@ function onCyclePoint(x, y, z) {
           "Y1",
           "Q" + xyzFormat.format(cycle.probeOvertravel),
           "R" + xyzFormat.format(cycle.probeClearance),
+          conditional(y != 0, "J" + xyzFormat.format(y)),
           getProbingArguments(cycle, true)
         );
       }
@@ -3278,3 +3281,4 @@ function onPassThrough(text) {
     writeBlock(commands[text]);
   }
 }
+
